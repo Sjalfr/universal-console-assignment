@@ -27,12 +27,12 @@ Projekt je realizován **týmově ve třech**.
 - historie příkazů
 - validace
 
-### b) Simulace světa **(Tomáš Maršál)**
+### b) Simulace světa **(Tomáš Marshal)**
 - zpracování objektů
 - fyzika / pohyb
 - animační smyčka
 
-### c) UI / design **(Josef Michálec)**
+### c) UI / design **(Josef Michalec)**
 - vzhled aplikace
 - barvy, fonty, zvuky
 - animace
