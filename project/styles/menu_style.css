@@ -15,6 +15,7 @@
     padding: 10px;
     box-sizing: border-box;
     overflow-y: auto;
+    border: #00ff88 solid 1px;
 }
 
 #output {
@@ -38,3 +39,4 @@
     flex: 1;
     font-family: monospace;
 }
+
