@@ -32,7 +32,7 @@ Projekt je realizován **týmově ve třech**.
 - fyzika / pohyb
 - animační smyčka
 
-### c) UI / design **(Josef Michalec)**
+### c) UI / design **(Josef Michálec)**
 - vzhled aplikace
 - barvy, fonty, zvuky
 - animace
