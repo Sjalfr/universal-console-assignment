@@ -1,6 +1,3 @@
-window.frozen = false;
-window.worldSpeed = 1;
-
 // ================== CANVAS ==================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -188,4 +185,3 @@ function loop(t) {
 }
 
 requestAnimationFrame(loop);
-

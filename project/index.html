@@ -5,25 +5,87 @@
   <title>Deep Space</title>
   <link rel="stylesheet" href="styles/simulation_style.css">
   <link rel="stylesheet" href="styles/menu_style.css">
+  <link rel="stylesheet" href="styles/terminal_style.css">
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Deep Space Terminal</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  
+  <canvas id="canvas"></canvas>
+  <script src="scripts/simulation.js"></script> 
 
-<canvas id="canvas"></canvas>
-<script src="scripts/simulation.js"></script> 
+  <div class="terminal-ui">
 
-<div id="terminal">
-  <div id="output"></div>
-  <div class="input-line">
-    <span class="prompt">></span>
-    <input type="text" id="commandInput" autocomplete="off" autofocus />
+    <!-- Top status bar -->
+    <div class="header">
+      <div class="left">DEEP SPACE OS v4.7 – EXPLORER@ORBIT</div>
+      <div class="right">16:39:42 | ONLINE | PING 14ms</div>
+    </div>
+
+    <!-- Main content area – 3-column grid -->
+    <div class="main-grid">
+
+      <!-- Left panel -->
+      <div class="panel left">
+        <div class="panel-title">SYSTEM</div>
+        <div class="content">
+          <!-- Add your system info, ascii, lists here later -->
+          <p>OS .......... DeepSpace 9.5</p>
+          <p>Uptime ...... 4h 39m</p>
+          <p>CPU .......... 28%</p>
+          <p>Memory ....... 320/512 GB</p>
+        </div>
+      </div>
+
+      <!-- Center panel (biggest area) -->
+      <div class="panel center">
+        <div class="panel-title">MAIN VIEW</div>
+        <div class="content">
+          <!-- This is where you can put map, canvas, big ascii, welcome message, etc. -->
+              <div id="terminal">
+                <div id="output"></div>
+                <div class="input-line">
+                  <span class="prompt">></span>
+                  <input type="text" id="commandInput" autocomplete="off" autofocus />
+                </div>
+              </div>
+              <script src="scripts/terminal.js"></script>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="panel right">
+        <div class="panel-title">STATUS</div>
+        <div class="content">
+          <!-- Short lists, small graphs, logs etc. go here -->
+          <p>Network .. ACTIVE</p>
+          <p>Relay .... SOL-3</p>
+          <p>Threat ... NOMINAL</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer">
+      <div class="commands">
+        [1] Start   [2] Archives   [3] Status   [4] Config   [ESC] Exit
+      </div>
+      <div class="storage">
+        /home used 45%  ▰▰▰▰▰░░░░░░░
+      </div>
+    </div>
+
   </div>
-</div>
 
-<script src="scripts/terminal.js"></script>
 
-<div>
-  <img class="earthrotation" src="SVGs/menu/earthrotation.svg" alt="">
-</div>
+
 
 </body>
+</html>
 </html>
