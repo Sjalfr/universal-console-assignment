@@ -1,3 +1,6 @@
+window.frozen = false;
+window.worldSpeed = 1;
+
 // ================== CANVAS ==================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -166,22 +169,28 @@ const foreground = Array.from({ length: 80 }, () => new ForegroundParticle());
 let last = performance.now();
 
 function loop(t) {
-  const dt = (t - last) / 1000;
+  const dt = ((t - last) / 1000) * window.worldSpeed;
   last = t;
+
+  if (!window.frozen) {
+      // update část
+      for (const g of galaxies) g.update(dt);
+      for (const s of farStars) s.update(dt);
+      for (const s of midStars) s.update(dt);
+      for (const s of closeStars) s.update(dt);
+      for (const f of foreground) f.update(dt);
+  }
 
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   for (const d of dust) d.draw();
-  for (const g of galaxies) { g.update(dt); g.draw(); }
-
-  for (const s of farStars)   { s.update(dt); s.draw(); }
-  for (const s of midStars)   { s.update(dt); s.draw(); }
-  for (const s of closeStars) { s.update(dt); s.draw(); }
-
-  for (const f of foreground) { f.update(dt); f.draw(); }
+  for (const g of galaxies) g.draw();
+  for (const s of farStars) s.draw();
+  for (const s of midStars) s.draw();
+  for (const s of closeStars) s.draw();
+  for (const f of foreground) f.draw();
 
   requestAnimationFrame(loop);
 }
 
-requestAnimationFrame(loop);
