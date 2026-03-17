@@ -6,20 +6,25 @@
   <link rel="stylesheet" href="styles/simulation_style.css">
   <link rel="stylesheet" href="styles/menu_style.css">
   <link rel="stylesheet" href="styles/terminal_style.css">
+  <link rel="stylesheet" href="styles/hide_button_style.css">
+
 </head>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Deep Space Terminal</title>
-  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  
   <canvas id="canvas"></canvas>
   <script src="scripts/simulation.js"></script> 
 
-  <div class="terminal-ui">
+
+  <script src="scripts/hide_button_script.js"></script> 
+  <button id="hide_button" onclick="toggleUI()">HIDE TERMINAL</button>
+
+
+  <div class="terminal-ui" id="mainUI">
 
     <!-- Top status bar -->
     <div class="header">
@@ -52,9 +57,9 @@
                 <div class="input-line">
                   <span class="prompt">></span>
                   <input type="text" id="commandInput" autocomplete="off" autofocus />
+                  <script src="scripts/terminal_script.js"></script>
                 </div>
               </div>
-              <script src="scripts/terminal.js"></script>
         </div>
       </div>
 
@@ -82,8 +87,6 @@
     </div>
 
   </div>
-
-
 
 
 </body>
