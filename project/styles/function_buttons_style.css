@@ -1,0 +1,38 @@
+#randomUIcolor {
+  position: fixed;
+  right: 1.5%;
+  bottom: 7%;
+  z-index: 1000;
+  width: 11vh;
+  height: 4vh;
+  background-color: #29335C;
+  color: white;
+  border: 2px solid #F3A712;
+  cursor: pointer;
+}
+
+#presetUIcolor {
+  position: fixed;
+  right: 7.5%;
+  bottom: 7%;
+  z-index: 1000;
+  width: 11vh;
+  height: 4vh;
+  background-color: #29335C;
+  color: white;
+  border: 2px solid #F3A712;
+  cursor: pointer;
+}
+
+#TEST {
+  position: fixed;
+  right: 13.5%;
+  bottom: 7%;
+  z-index: 1000;
+  width: 11vh;
+  height: 4vh;
+  background-color: #29335C;
+  color: white;
+  border: 2px solid #F3A712;
+  cursor: pointer;
+}

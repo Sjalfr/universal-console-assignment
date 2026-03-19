@@ -1,24 +1,25 @@
 #hide_button{
   position: fixed;
-  top: 10px;
-  right: 47%;
+  right: 50%;
+  bottom: 50%;
   z-index: 1000;
-  padding: 10px 20px;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 5px;
+  width: 15vh;
+  height: 4vh;
+  background-color: #ac0707;
+  color: rgb(255, 255, 255);
+  border: 2px solid #e6e6e6;
   cursor: pointer;
 }
 
 .terminal-ui {
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 1;
-  visibility: visible; /* Added for safety */
+  visibility: visible;
 }
 
 .is-hidden {
   opacity: 0;
   pointer-events: none; 
   transform: scale(0.98);
-  visibility: hidden; /* This ensures it's truly "gone" from the mouse */
+  visibility: hidden;
 }

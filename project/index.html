@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles/menu_style.css">
   <link rel="stylesheet" href="styles/terminal_style.css">
   <link rel="stylesheet" href="styles/hide_button_style.css">
+  <link rel="stylesheet" href="styles/function_buttons_style.css">
 
 </head>
 <!DOCTYPE html>
@@ -16,13 +17,15 @@
   <title>Deep Space Terminal</title>
 </head>
 <body>
+
+
+
   <canvas id="canvas"></canvas>
   <script src="scripts/simulation.js"></script> 
 
 
-  <script src="scripts/hide_button_script.js"></script> 
+  <script src="scripts/functioning_buttons_script.js"></script> 
   <button id="hide_button" onclick="toggleUI()">HIDE TERMINAL</button>
-
 
   <div class="terminal-ui" id="mainUI">
 
@@ -86,6 +89,12 @@
       </div>
     </div>
 
+    <div class="functioningbuttons">
+      <button id="randomUIcolor" onclick="changeUIRandom()">Random Terminal Color</button>
+      <button id="presetUIcolor" onclick="changeUIPreset()">Preset Terminal Color</button>
+      <button id="TEST" onclick="TEST()">TEST</button>
+
+    </div>
   </div>
 
 
