@@ -1,0 +1,169 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+  color: #F3A712;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* TERMINÁL UI */
+.terminal-ui {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65%;
+  background: rgba(10, 15, 30, 0.96);
+  border-top: 3px solid #F3A712;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.9);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.resizer {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+  z-index: 30;
+}
+.resizer:hover { background: rgba(243,167,18,0.4); }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  background: #29335C;
+  border-bottom: 1px solid #2e4fd2;
+  font-size: 1.1rem;
+}
+
+.main-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  gap: 12px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.panel {
+  border: 1px solid #2e4fd2;
+  background: rgba(0,12,25,0.7);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-title {
+  padding: 6px 12px;
+  background: #29335C;
+  border-bottom: 1px solid #2e4fd2;
+  color: #F3A712;
+  font-weight: bold;
+}
+
+.content {
+  flex: 1;
+  padding: 12px;
+  overflow: auto;
+}
+
+#terminal {
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  border: 1px solid #29335C;
+  display: flex;
+  flex-direction: column;
+}
+
+#output {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.input-line {
+  display: flex;
+  padding: 8px;
+  background: rgba(0,0,0,0.8);
+  border-top: 1px solid #29335C;
+}
+
+.prompt { margin-right: 8px; color: #F3A712; }
+
+#commandInput {
+  background: transparent;
+  border: none;
+  color: #fff;
+  outline: none;
+  flex: 1;
+  font-family: monospace;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  background: #29335C;
+  border-top: 1px solid #2e4fd2;
+}
+
+.functioningbuttons {
+  padding: 8px 15px;
+  background: #29335C;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.function-btn {
+  width: 130px;
+  height: 38px;
+  background: #29335C;
+  color: white;
+  border: 2px solid #F3A712;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+/* Hide button - mimo UI */
+#hide_button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  width: 170px;
+  height: 42px;
+  background-color: #ac0707;
+  color: white;
+  border: 2px solid #e6e6e6;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 1.05rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+#hide_button:hover {
+  background-color: #c00;
+}
+
+/* KLÍČOVÁ ČÁST - Skrytí UI */
+.is-hidden {
+  opacity: 0 !important;
+  transform: translateY(60px) !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
