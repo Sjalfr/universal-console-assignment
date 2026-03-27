@@ -1,88 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Deep Space</title>
-  <link rel="stylesheet" href="styles/simulation_style.css">
-  <link rel="stylesheet" href="styles/menu_style.css">
-  <link rel="stylesheet" href="styles/terminal_style.css">
-  <link rel="stylesheet" href="styles/hide_button_style.css">
-  <link rel="stylesheet" href="styles/function_buttons_style.css">
-
-</head>
-<!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <title>Deep Space Terminal</title>
+  <link rel="stylesheet" href="styles/simulation_style.css">
+  <link rel="stylesheet" href="styles/menu_style.css">
 </head>
 <body>
 
-
-
   <canvas id="canvas"></canvas>
-  <script src="scripts/simulation.js"></script> 
 
-
-  <script src="scripts/functioning_buttons_script.js"></script> 
-  <button id="hide_button" onclick="toggleUI()">HIDE TERMINAL</button>
-
+  <!-- === TERMINÁL UI === -->
   <div class="terminal-ui" id="mainUI">
 
-    <!-- Top status bar -->
     <div class="header">
       <div class="left">DEEP SPACE OS v4.7 – EXPLORER@ORBIT</div>
-      <div class="right">16:39:42 | ONLINE | PING 14ms</div>
+      <div class="right" id="live-time">00:00:00 | ONLINE | PING 12ms</div>
     </div>
 
-    <!-- Main content area – 3-column grid -->
+    <div class="resizer" id="resizer"></div>
+
     <div class="main-grid">
 
-      <!-- Left panel -->
       <div class="panel left">
         <div class="panel-title">SYSTEM</div>
         <div class="content">
-          <!-- Add your system info, ascii, lists here later -->
           <p>OS .......... DeepSpace 9.5</p>
-          <p>Uptime ...... 4h 39m</p>
-          <p>CPU .......... 28%</p>
-          <p>Memory ....... 320/512 GB</p>
+          <p id="uptime">Uptime ...... 00h 00m</p>
+          <p id="cpu">CPU .......... 28%</p>
+          <p id="memory">Memory ....... 320/512 GB</p>
         </div>
       </div>
 
-      <!-- Center panel (biggest area) -->
       <div class="panel center">
-        <div class="panel-title">MAIN VIEW</div>
+        <div class="panel-title">MAIN VIEW - TERMINAL</div>
         <div class="content">
-          <!-- This is where you can put map, canvas, big ascii, welcome message, etc. -->
-              <div id="terminal">
-                <div id="output"></div>
-                <div class="input-line">
-                  <span class="prompt">></span>
-                  <input type="text" id="commandInput" autocomplete="off" autofocus />
-                  <script src="scripts/terminal_script.js"></script>
-                </div>
-              </div>
+          <div id="terminal">
+            <div id="output"></div>
+            <div class="input-line">
+              <span class="prompt">></span>
+              <input type="text" id="commandInput" autocomplete="off" autofocus />
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Right panel -->
       <div class="panel right">
         <div class="panel-title">STATUS</div>
         <div class="content">
-          <!-- Short lists, small graphs, logs etc. go here -->
-          <p>Network .. ACTIVE</p>
+          <p>Network .. <span class="status-active">ACTIVE</span></p>
           <p>Relay .... SOL-3</p>
-          <p>Threat ... NOMINAL</p>
+          <p>Threat ... <span class="status-nominal">NOMINAL</span></p>
         </div>
       </div>
 
     </div>
 
-    <!-- Bottom bar -->
     <div class="footer">
       <div class="commands">
-        [1] Start   [2] Archives   [3] Status   [4] Config   [ESC] Exit
+        [1] Start &nbsp; [2] Archives &nbsp; [3] Status &nbsp; [4] Config &nbsp; [ESC] Exit
       </div>
       <div class="storage">
         /home used 45%  ▰▰▰▰▰░░░░░░░
@@ -90,14 +66,19 @@
     </div>
 
     <div class="functioningbuttons">
-      <button id="randomUIcolor" onclick="changeUIRandom()">Random Terminal Color</button>
-      <button id="presetUIcolor" onclick="changeUIPreset()">Preset Terminal Color</button>
-      <button id="TEST" onclick="TEST()">TEST</button>
-
+      <button class="function-btn" id="randomUIcolor" onclick="changeUIRandom()">Random Color</button>
+      <button class="function-btn" id="presetUIcolor" onclick="changeUIPreset()">Preset Color</button>
+      <button class="function-btn" id="TEST" onclick="TEST()">TEST</button>
     </div>
+
   </div>
 
+  <!-- Hide/Show button - UMÍSTĚN MIMO terminál, aby zůstal viditelný -->
+  <button id="hide_button" onclick="toggleUI()">HIDE TERMINAL</button>
+
+  <script src="scripts/simulation_script.js"></script>
+  <script src="scripts/terminal_script.js"></script>
+  <script src="scripts/ui_controls.js"></script>
 
 </body>
-</html>
 </html>
