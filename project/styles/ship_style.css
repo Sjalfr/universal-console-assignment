@@ -1,0 +1,15 @@
+.temp{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 64px;
+    height: auto;
+}
+
+.temp2{
+    position: fixed;
+    top: 10px;
+    right: 124px;
+    width: 64px;
+    height: auto;
+}

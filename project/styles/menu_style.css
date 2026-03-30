@@ -59,7 +59,7 @@ body {
 
 .panel {
   border: 1px solid #2e4fd2;
-  background: rgba(0,12,25,0.7);
+  background: #000c19b3;
   display: flex;
   flex-direction: column;
 }
@@ -142,8 +142,8 @@ body {
 /* Hide button - mimo UI */
 #hide_button {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: 10px;
+  left: 10px;
   z-index: 1000;
   width: 170px;
   height: 42px;

@@ -50,19 +50,32 @@ document.addEventListener('mousemove', e => {
 
 document.addEventListener('mouseup', () => isResizing = false);
 
-// Color buttons
-function changeUIRandom() {
-  const c1 = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-  const c3 = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-  document.body.style.backgroundColor = c1;
-  document.querySelectorAll('.header, .footer, .functioningbuttons, .panel-title').forEach(el => el.style.backgroundColor = c3);
-}
+// Color button
+const presets = [
+  { name: "Sunset", bg: "#E4572E", accent: "#29335C", bbg: "#000c19b3"},
+  { name: "Forest", bg: "#2D5A27", accent: "#1B3022", bbg: "#2f4620" },
+  { name: "Ocean",  bg: "#0077B6", accent: "#023E8A", bbg: "#129fd6" },
+  { name: "Dark",   bg: "#121212", accent: "#1F1F1F", bbg: "#333333" }
+];
 
-function changeUIPreset() {
-  document.body.style.backgroundColor = "#E4572E";
-  document.querySelectorAll('.header, .footer, .functioningbuttons, .panel-title').forEach(el => el.style.backgroundColor = "#29335C");
-}
+let currentPresetIndex = 0;
 
+function rotateUIPreset() {
+  currentPresetIndex = (currentPresetIndex + 1) % presets.length;
+  const theme = presets[currentPresetIndex];
+
+  document.body.style.backgroundColor = theme.bg;
+
+  const elements = document.querySelectorAll('.header, .footer, .functioningbuttons, .panel-title');
+  elements.forEach(el => el.style.backgroundColor = theme.accent);
+
+
+  const terminal = document.querySelector('.terminal-ui');
+  const panel = document.querySelector('.panel');
+
+  if (terminal) terminal.style.backgroundColor = theme.bbg;
+  if (panel) panel.style.backgroundColor = theme.obg;
+}
 function TEST() {
   const output = document.getElementById("output");
   output.innerHTML += "TEST command executed.<br>";

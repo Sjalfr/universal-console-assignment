@@ -5,10 +5,12 @@
   <title>Deep Space Terminal</title>
   <link rel="stylesheet" href="styles/simulation_style.css">
   <link rel="stylesheet" href="styles/menu_style.css">
+  <link rel="stylesheet" href="styles/ship_style.css">
 </head>
 <body>
 
   <canvas id="canvas"></canvas>
+
 
   <!-- === TERMINÁL UI === -->
   <div class="terminal-ui" id="mainUI">
@@ -67,11 +69,15 @@
 
     <div class="functioningbuttons">
       <button class="function-btn" id="randomUIcolor" onclick="changeUIRandom()">Random Color</button>
-      <button class="function-btn" id="presetUIcolor" onclick="changeUIPreset()">Preset Color</button>
+      <button class="function-btn" id="presetUIcolor" onclick="rotateUIPreset()">Preset Color</button>
       <button class="function-btn" id="TEST" onclick="TEST()">TEST</button>
     </div>
 
   </div>
+
+  <img src="SVGs/menu/alien attacker spaceship.svg" class="temp">
+  <img src="SVGs/menu/human attacker spaceship.svg" class="temp2">
+
 
   <!-- Hide/Show button - UMÍSTĚN MIMO terminál, aby zůstal viditelný -->
   <button id="hide_button" onclick="toggleUI()">HIDE TERMINAL</button>
