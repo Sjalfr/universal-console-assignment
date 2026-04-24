@@ -22,6 +22,21 @@ function screenToWorld(sx, sy) {
     };
 }
 
+// === SVG SKINS ===
+const playerSkin = new Image();
+const enemySkin = new Image();
+playerSkin.src = "SVGs/menu/human attacker spaceship.svg";
+enemySkin.src = "SVGs/menu/alien attacker spaceship.svg";
+
+function drawRotatedImage(img, x, y, angle, size) {
+    const pos = worldToScreen(x, y);
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    ctx.rotate(angle);
+    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+    ctx.restore();
+}
+
 // ====================== SPACESHIP ======================
 class Spaceship {
     constructor() { this.reset(); }
@@ -30,54 +45,233 @@ class Spaceship {
         this.vx = 0; this.vy = 0;
         this.angle = 0;
         this.thrustPower = 0;
-        this.size = 18;
+        this.size = 64;
     }
     update(dt) {
-        const ax = Math.cos(this.angle) * this.thrustPower * 180;
-        const ay = Math.sin(this.angle) * this.thrustPower * 180;
+        const accel = 260; // vyšší akcelerace
+        const ax = Math.cos(this.angle) * this.thrustPower * accel;
+        const ay = Math.sin(this.angle) * this.thrustPower * accel;
         this.vx += ax * dt;
         this.vy += ay * dt;
-        this.vx *= 0.96;
-        this.vy *= 0.96;
+
+        // lehčí tlumení, aby si udržela rychlost
+        this.vx *= 0.97;
+        this.vy *= 0.97;
+
+        // limit maximální rychlosti
+        const maxSpeed = 420;
+        const speed = Math.hypot(this.vx, this.vy);
+        if (speed > maxSpeed) {
+            const k = maxSpeed / speed;
+            this.vx *= k;
+            this.vy *= k;
+        }
+
         this.x += this.vx * dt;
         this.y += this.vy * dt;
         this.thrustPower *= 0.92;
     }
-    draw() {
+    drawThrusters() {
+        if (this.thrustPower <= 0.05) return;
+
+        const baseAlpha = Math.min(1, this.thrustPower * 1.4);
+        const lenBase = this.size * (1.0 + Math.random() * 0.7);
+
+        // dvě trysky vzadu (Triska 1, Triska 2)
+        const thrusters = [
+            { x: -this.size * 0.45, y: -this.size * 0.18 },
+            { x: -this.size * 0.45, y:  this.size * 0.18 }
+        ];
+
         const pos = worldToScreen(this.x, this.y);
         ctx.save();
         ctx.translate(pos.x, pos.y);
         ctx.rotate(this.angle);
 
-        ctx.fillStyle = '#00ddff';
-        ctx.beginPath();
-        ctx.moveTo(this.size, 0);
-        ctx.lineTo(-this.size * 0.8, -this.size * 0.7);
-        ctx.lineTo(-this.size * 0.55, 0);
-        ctx.lineTo(-this.size * 0.8, this.size * 0.7);
-        ctx.closePath();
-        ctx.fill();
+        for (const t of thrusters) {
+            const wobble = (Math.random() - 0.5) * this.size * 0.15;
+            const len = lenBase * (0.9 + Math.random() * 0.3);
 
-        ctx.fillStyle = '#112244';
-        ctx.beginPath();
-        ctx.arc(this.size * 0.25, 0, this.size * 0.28, 0, Math.PI * 2);
-        ctx.fill();
+            const grad = ctx.createLinearGradient(t.x, t.y, t.x - len, t.y);
+            grad.addColorStop(0, `rgba(255,230,160,${baseAlpha})`);
+            grad.addColorStop(0.4, `rgba(255,160,40,${baseAlpha * 0.9})`);
+            grad.addColorStop(1, `rgba(60,120,255,0)`);
 
-        if (this.thrustPower > 0.08) {
-            ctx.fillStyle = `rgba(255,140,0,${this.thrustPower})`;
-            const len = this.size * (0.9 + Math.random() * 0.7);
+            ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.moveTo(-this.size * 0.55, 0);
-            ctx.lineTo(-len, -this.size * 0.4);
-            ctx.lineTo(-len * 0.7, 0);
-            ctx.lineTo(-len, this.size * 0.4);
+            ctx.moveTo(t.x, t.y - this.size * 0.10);
+            ctx.lineTo(t.x - len, t.y + wobble);
+            ctx.lineTo(t.x, t.y + this.size * 0.10);
+            ctx.closePath();
             ctx.fill();
         }
+
         ctx.restore();
+    }
+    draw() {
+        drawRotatedImage(playerSkin, this.x, this.y, this.angle, this.size);
+        this.drawThrusters();
     }
 }
 
 let ship = null;
+
+// ====================== ENEMIES / BULLETS / EXPLOSIONS ======================
+class Enemy {
+    constructor() { this.reset(); }
+    reset() {
+        this.x = (Math.random() - 0.5) * 1200;
+        this.y = (Math.random() - 0.5) * 1200;
+        this.vx = (Math.random() - 0.5) * 40;
+        this.vy = (Math.random() - 0.5) * 40;
+        this.size = 64;
+        this.angle = 0;
+        this.shootTimer = 2 + Math.random() * 4; // 2–6 s
+    }
+    update(dt) {
+        if (ship) {
+            const dx = ship.x - this.x;
+            const dy = ship.y - this.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const accel = 40;
+            this.vx += (dx / dist) * accel * dt;
+            this.vy += (dy / dist) * accel * dt;
+        }
+        this.vx *= 0.97;
+        this.vy *= 0.97;
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.angle = Math.atan2(this.vy, this.vx);
+        wrapObject(this);
+
+        this.shootTimer -= dt;
+        if (this.shootTimer <= 0 && ship) {
+            this.shootAtShip();
+            this.shootTimer = 3 + Math.random() * 5; // 3–8 s
+        }
+    }
+    shootAtShip() {
+        const dx = ship.x - this.x;
+        const dy = ship.y - this.y;
+        const baseAngle = Math.atan2(dy, dx);
+        const spread = (Math.random() - 0.5) * (Math.PI / 18); // ±10°
+        const ang = baseAngle + spread;
+        const speed = 260;
+
+        // zbraně – posunuty dál ke konci křídla
+        const guns = [
+            { x: this.size * 0.50, y: -this.size * 0.16 },
+            { x: this.size * 0.50, y:  this.size * 0.16 }
+        ];
+
+        for (const g of guns) {
+            const cosA = Math.cos(this.angle);
+            const sinA = Math.sin(this.angle);
+            const wx = this.x + cosA * g.x - sinA * g.y;
+            const wy = this.y + sinA * g.x + cosA * g.y;
+
+            const vx = Math.cos(ang) * speed;
+            const vy = Math.sin(ang) * speed;
+            enemyBullets.push(new EnemyBullet(wx, wy, vx, vy));
+        }
+    }
+    draw() {
+        drawRotatedImage(enemySkin, this.x, this.y, this.angle, this.size);
+    }
+}
+
+class Bullet {
+    constructor(x, y, vx, vy) {
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.life = 1.2;
+    }
+    update(dt) {
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.life -= dt;
+        wrapObject(this);
+    }
+    draw() {
+        const pos = worldToScreen(this.x, this.y);
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,240,120,0.9)';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 3 * camera.zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+class EnemyBullet {
+    constructor(x, y, vx, vy) {
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.life = 2.5;
+    }
+    update(dt) {
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.life -= dt;
+        wrapObject(this);
+    }
+    draw() {
+        const pos = worldToScreen(this.x, this.y);
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,80,80,0.9)';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 3 * camera.zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+class ExplosionParticle {
+    constructor(x, y) {
+        this.x = x; this.y = y;
+        const a = Math.random() * Math.PI * 2;
+        const s = 80 + Math.random() * 140;
+        this.vx = Math.cos(a) * s;
+        this.vy = Math.sin(a) * s;
+        this.life = 0.6 + Math.random() * 0.4;
+        this.maxLife = this.life;
+        this.size = 4 + Math.random() * 6;
+        this.hue = 20 + Math.random() * 40;
+    }
+    update(dt) {
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.vx *= 0.9;
+        this.vy *= 0.9;
+        this.life -= dt;
+    }
+    draw() {
+        const pos = worldToScreen(this.x, this.y);
+        const alpha = Math.max(0, this.life / this.maxLife);
+        ctx.save();
+        ctx.fillStyle = `hsla(${this.hue},80%,60%,${alpha})`;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, this.size * camera.zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+let enemies = [];
+let bullets = [];
+let enemyBullets = [];
+let explosions = [];
+
+function spawnEnemy() {
+    const e = new Enemy();
+    enemies.push(e);
+}
+
+function spawnExplosion(x, y) {
+    for (let i = 0; i < 24; i++) {
+        explosions.push(new ExplosionParticle(x, y));
+    }
+}
 
 // ====================== BACKGROUND ======================
 class Star {
@@ -220,12 +414,11 @@ canvas.addEventListener('wheel', e => {
     camera.y += before.y - after.y;
 });
 
-// DŮLEŽITÉ: Správný resize, který opraví malé pole
+// DŮLEŽITÉ: Správný resize
 function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Reset pozic hvězd při velké změně velikosti (aby se nevytvářely mimo obrazovku)
     closeStars.forEach(s => s.reset());
     midStars.forEach(s => s.reset());
     farStars.forEach(s => s.reset());
@@ -234,7 +427,26 @@ function resize() {
     foreground.forEach(f => f.reset());
 }
 window.addEventListener('resize', resize);
-resize();   // první volání
+resize();
+
+// pomocná funkce pro wrap v závislosti na kameře a zoomu
+function wrapObject(obj) {
+    const halfW = canvas.width / (2 * camera.zoom);
+    const halfH = canvas.height / (2 * camera.zoom);
+    if (obj.x < camera.x - halfW) obj.x = camera.x + halfW;
+    if (obj.x > camera.x + halfW) obj.x = camera.x - halfW;
+    if (obj.y < camera.y - halfH) obj.y = camera.y + halfH;
+    if (obj.y > camera.y + halfH) obj.y = camera.y - halfH;
+}
+
+// KEYBOARD (plynulé ovládání lodě)
+const keyState = {};
+document.addEventListener('keydown', e => {
+    keyState[e.key.toLowerCase()] = true;
+});
+document.addEventListener('keyup', e => {
+    keyState[e.key.toLowerCase()] = false;
+});
 
 // MAIN LOOP
 function loop(t) {
@@ -248,7 +460,99 @@ function loop(t) {
         closeStars.forEach(s => s.update(dt));
         foreground.forEach(f => f.update(dt));
 
-        if (ship) ship.update(dt);
+        if (ship) {
+            const rotSpeed = 2.8;
+            if (keyState['a'] || keyState['arrowleft']) {
+                ship.angle -= rotSpeed * dt;
+            }
+            if (keyState['d'] || keyState['arrowright']) {
+                ship.angle += rotSpeed * dt;
+            }
+            if (keyState['w'] || keyState['arrowup']) {
+                ship.thrustPower = 1;
+            }
+            if (keyState['s'] || keyState['arrowdown']) {
+                const speed = Math.hypot(ship.vx, ship.vy);
+                if (speed < 5) {
+                    ship.vx = 0;
+                    ship.vy = 0;
+                } else {
+                    ship.vx *= 0.85;
+                    ship.vy *= 0.85;
+                }
+            }
+
+            ship.update(dt);
+            wrapObject(ship);
+        }
+
+        enemies.forEach(e => e.update(dt));
+        bullets.forEach(b => b.update(dt));
+        enemyBullets.forEach(b => b.update(dt));
+        explosions.forEach(ex => ex.update(dt));
+
+        // enemy separation (anti-clipping)
+        const minDist = 40;
+        for (let i = 0; i < enemies.length; i++) {
+            for (let j = i + 1; j < enemies.length; j++) {
+                const e1 = enemies[i];
+                const e2 = enemies[j];
+                const dx = e2.x - e1.x;
+                const dy = e2.y - e1.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist > 0 && dist < minDist) {
+                    const overlap = (minDist - dist) / 2;
+                    const nx = dx / dist;
+                    const ny = dy / dist;
+                    e1.x -= nx * overlap;
+                    e1.y -= ny * overlap;
+                    e2.x += nx * overlap;
+                    e2.y += ny * overlap;
+                }
+            }
+        }
+
+        // bullet vs enemy collisions
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const b = bullets[i];
+            if (b.life <= 0) {
+                bullets.splice(i, 1);
+                continue;
+            }
+            for (let j = enemies.length - 1; j >= 0; j--) {
+                const e = enemies[j];
+                const dx = e.x - b.x;
+                const dy = e.y - b.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < e.size * 0.6) {
+                    spawnExplosion(e.x, e.y);
+                    enemies.splice(j, 1);
+                    bullets.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        // enemy bullets vs ship
+        if (ship) {
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const b = enemyBullets[i];
+                if (b.life <= 0) {
+                    enemyBullets.splice(i, 1);
+                    continue;
+                }
+                const dx = ship.x - b.x;
+                const dy = ship.y - b.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < ship.size * 0.5) {
+                    spawnExplosion(ship.x, ship.y);
+                    enemyBullets.splice(i, 1);
+                }
+            }
+        }
+
+        explosions = explosions.filter(ex => ex.life > 0);
+        enemyBullets = enemyBullets.filter(b => b.life > 0);
     }
 
     ctx.fillStyle = '#000000';
@@ -260,7 +564,12 @@ function loop(t) {
     midStars.forEach(s => s.draw());
     closeStars.forEach(s => s.draw());
     foreground.forEach(f => f.draw());
+
     if (ship) ship.draw();
+    enemies.forEach(e => e.draw());
+    bullets.forEach(b => b.draw());
+    enemyBullets.forEach(b => b.draw());
+    explosions.forEach(ex => ex.draw());
 
     requestAnimationFrame(loop);
 }
@@ -271,7 +580,9 @@ requestAnimationFrame(loop);
 window.spawnShip = function() {
     if (!ship) ship = new Spaceship();
     else ship.reset();
-    return "✓ Spaceship created at (0, 0). Use console commands to control it.";
+    camera.x = ship.x;
+    camera.y = ship.y;
+    return "✓ Spaceship created at (0, 0). Use console commands or WASD to control it.";
 };
 
 window.getShipStatus = function() {
@@ -291,24 +602,71 @@ window.setBrake = function(val) {
     if (!ship) return "No ship.";
     const v = parseFloat(val);
     if (isNaN(v)) return "Invalid number.";
-    ship.vx *= (1 - Math.max(0, Math.min(1, v)) * 0.7);
-    ship.vy *= (1 - Math.max(0, Math.min(1, v)) * 0.7);
+    const f = Math.max(0, Math.min(1, v)) * 0.9;
+    ship.vx *= (1 - f);
+    ship.vy *= (1 - f);
     return `Brake applied.`;
 };
 
 window.setRotate = function(deg) {
     if (!ship) return "No ship.";
-    ship.angle = (parseFloat(deg) || 0) * Math.PI / 180;
-    return `Rotated to ${deg}°`;
+    const d = parseFloat(deg) || 0;
+    ship.angle += d * Math.PI / 180;
+    return `Rotated by ${deg}°`;
 };
 
 window.stopShip = function() {
     if (!ship) return "No ship.";
-    ship.vx = ship.vy = ship.thrustPower = 0;
+    ship.vx = 0;
+    ship.vy = 0;
+    ship.thrustPower = 0;
     return "Ship stopped.";
 };
 
 window.despawnShip = function() {
     ship = null;
     return "Spaceship removed.";
+};
+
+// ENEMY API
+let enemySpawnInterval = null;
+
+window.spawnenemies = function() {
+    if (enemySpawnInterval) return "Enemies already spawning.";
+    for (let i = 0; i < 3; i++) spawnEnemy();
+    enemySpawnInterval = setInterval(() => {
+        if (enemies.length < 20) spawnEnemy();
+    }, 3000);
+    return "✓ Enemy spawning started.";
+};
+
+window.stopspawningenemies = function() {
+    if (enemySpawnInterval) {
+        clearInterval(enemySpawnInterval);
+        enemySpawnInterval = null;
+    }
+    return "Enemy spawning stopped.";
+};
+
+// SHOOT API
+window.shoot = function() {
+    if (!ship) return "No ship.";
+    const speed = 420;
+
+    // zbraně – posunuty dál ke konci křídla
+    const guns = [
+        { x: ship.size * 0.50, y: -ship.size * 0.16 },
+        { x: ship.size * 0.50, y:  ship.size * 0.16 }
+    ];
+
+    for (const g of guns) {
+        const cosA = Math.cos(ship.angle);
+        const sinA = Math.sin(ship.angle);
+        const bx = ship.x + cosA * g.x - sinA * g.y;
+        const by = ship.y + sinA * g.x + cosA * g.y;
+        const vx = Math.cos(ship.angle) * speed;
+        const vy = Math.sin(ship.angle) * speed;
+        bullets.push(new Bullet(bx, by, vx, vy));
+    }
+    return "Pew!";
 };
